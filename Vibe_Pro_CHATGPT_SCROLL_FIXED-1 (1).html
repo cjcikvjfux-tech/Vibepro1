@@ -1,0 +1,656 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vibe Pro AI</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:system-ui,Tahoma,sans-serif;background:#05060b;color:#fff;overflow:hidden}
+body:before{content:"";position:fixed;inset:-40%;z-index:-2;background:conic-gradient(#7c3aed,#06b6d4,#ec4899,#22c55e,#7c3aed);filter:blur(100px);opacity:.28;animation:bg 12s linear infinite}
+body:after{content:"";position:fixed;inset:0;z-index:-1;background:radial-gradient(circle at 20% 20%,#7c3aed20,transparent 35%),radial-gradient(circle at 80% 70%,#06b6d420,transparent 35%)}
+@keyframes bg{0%{transform:rotate(0) scale(1)}50%{transform:rotate(180deg) scale(1.18)}100%{transform:rotate(360deg) scale(1)}}
+.app{height:100%;display:flex}.side{width:290px;background:#090d16ee;border-left:1px solid #293148;backdrop-filter:blur(18px);padding:18px;display:flex;flex-direction:column;gap:12px}
+.logo{font-size:29px;font-weight:900}.logo span{background:linear-gradient(90deg,#a78bfa,#22d3ee,#f472b6,#a78bfa);background-size:300%;animation:grad 5s linear infinite;-webkit-background-clip:text;color:transparent}@keyframes grad{to{background-position:300%}}
+.maker{font-size:12px;color:#aeb7cb}.coins{display:flex;justify-content:space-between;padding:12px;border:1px solid #303950;border-radius:14px;background:#111727}
+button{cursor:pointer}.btn{border:1px solid #303950;background:#151b2c;color:#e6e9f2;border-radius:11px;padding:10px}.primary{border:0;background:linear-gradient(90deg,#7c3aed,#2563eb,#06b6d4);color:#fff;border-radius:12px;padding:12px;font-weight:800}
+.history{flex:1;overflow:auto}.main{flex:1;min-width:0;display:flex;flex-direction:column}.top{height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:#070a11bb;border-bottom:1px solid #252d40;backdrop-filter:blur(14px)}.status{font-size:12px;color:#83f0c0}.menu{display:none;background:none;border:0;color:white;font-size:24px}
+.msgs{flex:1;overflow:auto;padding:24px;display:flex;flex-direction:column;gap:15px}.empty{margin:auto;text-align:center;color:#9da7bc}.empty h1{font-size:42px;background:linear-gradient(90deg,#fff,#a78bfa,#67e8f9,#f9a8d4);-webkit-background-clip:text;color:transparent}
+.msg{max-width:850px;border:1px solid #2c354b;border-radius:18px;padding:14px 17px;line-height:1.8;white-space:pre-wrap;background:#101624}.user{align-self:flex-start;background:#222a3c}.ai{align-self:flex-end}.who{font-size:11px;color:#9ca8bd;margin-bottom:4px}
+.composer{padding:13px;border-top:1px solid #252d40;background:#070a11dd}.box{max-width:920px;margin:auto;display:flex;gap:8px;background:#111727;border:1px solid #303950;border-radius:18px;padding:8px}.box textarea{flex:1;background:none;border:0;outline:0;color:white;font:inherit;resize:none;padding:10px;min-height:45px}.send{border:0;border-radius:13px;background:linear-gradient(90deg,#8b5cf6,#06b6d4);color:white;font-weight:900;padding:0 18px}.tools{max-width:920px;margin:8px auto 0;display:flex;gap:7px;flex-wrap:wrap}.preview{max-width:920px;margin:6px auto;display:none}.preview img{max-width:180px;max-height:140px;border-radius:12px;border:1px solid #374158}
+.modal{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;padding:18px;z-index:20}.card{width:min(570px,100%);background:#101624;border:1px solid #374158;border-radius:20px;padding:20px}.card input,.card textarea{width:100%;background:#080c14;color:white;border:1px solid #303950;border-radius:10px;padding:12px;margin:7px 0;font:inherit}.card textarea{min-height:100px}.row{display:flex;gap:8px;flex-wrap:wrap}
+@media(max-width:720px){.side{position:fixed;right:-305px;top:0;height:100%;z-index:10;transition:.25s}.side.open{right:0}.menu{display:block}.msgs{padding:13px}.msg{max-width:94%}}
+</style>
+
+<style id="vibeNewStartStyle">
+#vibeIntro{position:fixed;inset:0;background:#000;z-index:999999;display:flex;align-items:center;justify-content:center}
+#vibeIntroPlayer{width:100%;height:100%;border:0;background:#000}
+#introStatus{position:absolute;top:16px;left:50%;transform:translateX(-50%);z-index:2;background:#000b;border:1px solid #fff3;border-radius:999px;padding:9px 15px;color:#fff;font:700 13px Arial}
+
+#vibeProfileGate{display:none;position:fixed;inset:0;z-index:999998;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:24px;background:radial-gradient(circle,#20102b,#05050a 65%,#000);font-family:Arial;color:#fff;overflow:hidden}
+#vibeProfileGate>*{position:relative;z-index:2}
+#vibeProfileGate h1{margin:8px 0;font-size:30px}
+#vibeProfileGate p{color:#bbb;margin:8px 0 18px}
+#vibeName,#vibeBirth{width:min(420px,92vw);padding:15px;margin:6px 0;border-radius:14px;border:1px solid #ffffff33;background:#09090f;color:#fff;font-size:16px;outline:none}
+#vibeEnter{width:min(420px,92vw);padding:16px;margin-top:10px;border:0;border-radius:15px;background:linear-gradient(90deg,#ff3d00,#ff9d00,#7c3aed,#06b6d4);background-size:300% 100%;color:#fff;font-size:17px;font-weight:900;animation:vibeBtn 2s linear infinite}
+#vibeGateError{min-height:24px;color:#ff8080;margin-top:8px;font:700 14px Arial}
+.gateCrown{font-size:54px}.gateDragon{position:absolute!important;font-size:48px;animation:vibeDragon 4s linear infinite;transform-origin:150px 150px}
+.gateFire{position:absolute!important;inset:12%;border-radius:35px;background:conic-gradient(#f00,#ff0,#f60,#f00);filter:blur(30px);opacity:.25;animation:vibeSpin 2s linear infinite}
+@keyframes vibeSpin{to{transform:rotate(360deg)}}@keyframes vibeDragon{to{transform:rotate(360deg)}}@keyframes vibeBtn{to{background-position:300% 50%}}
+#vibeOldApp{display:block}
+</style>
+
+<style id="vibeNoVoice">
+button[aria-label*="صوت"],button[aria-label*="voice"],button[title*="صوت"],button[title*="voice"],
+#voiceBtn,#voiceInput,#mic,#voice,#speakBtn{display:none!important}
+</style>
+
+<style id="vibeChatSize">
+#chatBox,#chat-container,.chat-input-container,.input-area{max-width:760px!important;width:calc(100% - 24px)!important;margin-left:auto!important;margin-right:auto!important}
+textarea,input[type="text"]{font-size:16px}
+</style>
+
+<style id="vibePersistStyle">
+#vibeProfileGate .saved-note{display:none;color:#9ff;font-size:13px;margin-top:8px}
+</style>
+
+<style id="vibeSettingsCSS">
+#vibeSettingsToggle{
+  position:fixed;top:14px;right:14px;z-index:99998;
+  border:1px solid rgba(255,255,255,.18);background:rgba(20,20,30,.9);
+  color:#fff;border-radius:12px;padding:9px 12px;font-size:14px;cursor:pointer;
+  backdrop-filter:blur(10px)
+}
+#vibeSettingsPanel{
+  position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.62);padding:18px
+}
+#vibeSettingsCard{
+  width:min(420px,100%);max-height:85vh;overflow:auto;border-radius:22px;padding:20px;
+  background:#11111d;color:#fff;border:1px solid rgba(255,255,255,.15);
+  box-shadow:0 20px 70px rgba(0,0,0,.45)
+}
+#vibeSettingsCard h3{margin:0 0 16px;font-size:20px}
+#vibeSettingsCard label{display:block;margin:12px 0 7px;font-size:13px;opacity:.85}
+#vibeLanguageSelect{width:100%;box-sizing:border-box;padding:12px;border-radius:12px;background:#1b1b2a;color:#fff;border:1px solid rgba(255,255,255,.16)}
+#vibeCloseSettings{margin-top:16px;width:100%;padding:12px;border:0;border-radius:12px;cursor:pointer;font-weight:700}
+</style>
+</head>
+<body>
+<div id="vibeIntro">
+  <iframe id="vibeIntroPlayer"
+    src="https://www.tiktok.com/player/v1/7683121477444472071?controls=0&progress_bar=0&play_button=0&volume_control=0&fullscreen_button=0&timestamp=0&music_info=0&description=0&rel=0&autoplay=1&loop=0"
+    allow="autoplay; fullscreen; encrypted-media"
+    allowfullscreen></iframe>
+  <div id="introStatus">🎬 جاري تشغيل الفيديو...</div>
+  
+</div>
+
+<div id="vibeProfileGate">
+  <div class="gateFire"></div>
+  <div class="gateDragon">🐉</div>
+  <div class="gateCrown">👑</div>
+  <h1>مرحباً بك في Vibe Pro</h1>
+  <p>اكتب اسمك وتاريخ ميلادك للدخول.</p>
+  <input id="vibeName" type="text" placeholder="اسمك" maxlength="40" autocomplete="name">
+  <input id="vibeBirth" type="date">
+  <button id="vibeEnter" type="button">دخول إلى Vibe Pro 🚀</button>
+  <div id="vibeGateError"></div>
+</div>
+<div id="vibeOldApp">
+<div class="app">
+<aside class="side" id="side">
+<div class="logo">Vibe <span>Pro</span></div>
+<div class="maker">👑 صنع بواسطة Yacin Naili — من طرف الملك</div>
+<div class="coins">🪙 العملات <b id="coins">0</b></div>
+<button class="primary" onclick="newChat()">＋ محادثة جديدة</button>
+<button class="btn" onclick="follow()">🎵 TikTok +50 🪙</button>
+<div class="history" id="history"></div>
+<button class="btn" onclick="settings()">⚙️ إعدادات</button>
+</aside>
+<main class="main">
+<header class="top"><button class="menu" onclick="toggleSide()">☰</button><div><b>Vibe Pro AI ✨</b><div class="status">● الكتابة مجانية</div></div><button class="btn" onclick="settings()">⚙️</button></header>
+<section class="msgs" id="msgs"><div class="empty" id="empty"><h1>Vibe Pro ✨</h1><p>اكتب أو أرسل صورة 🖼️</p><p>💬 Vibe Pro</p></div></section>
+<div class="preview" id="preview"></div>
+<div class="composer">
+<div class="box"><textarea id="input" rows="1" placeholder="اكتب رسالتك..."></textarea><button class="send" onclick="send()">إرسال</button></div>
+<div class="tools">
+
+<button class="btn" onclick="document.getElementById('file').click()">🖼️ صورة −10 🪙</button>
+
+</div>
+<input id="file" type="file" accept="image/*" hidden onchange="chooseImage(event)">
+</div>
+</main></div>
+
+<div class="modal" id="modal"><div class="card"><h2>⚙️ إعدادات Vibe Pro</h2>
+<label>Hugging Face Token</label><input id="token" type="password" placeholder="hf_...">
+<label>تعليماتك المخصصة</label><textarea id="custom" placeholder="مثال: كن ودودًا وأجب بالعربية..."></textarea>
+<p style="font-size:12px;color:#aeb7cb">الدردشة: openai/gpt-oss-120b:groq<br>الصور: Qwen/Qwen2.5-VL-7B-Instruct:featherless-ai</p>
+<div class="row"><button class="primary" onclick="saveSettings()">حفظ</button><button class="btn" onclick="closeSettings()">إغلاق</button></div>
+</div></div>
+
+<script>
+const CHAT_MODEL="openai/gpt-oss-120b:groq";
+const VISION_MODEL="Qwen/Qwen2.5-VL-7B-Instruct:featherless-ai";
+const ENDPOINT="https://router.huggingface.co/v1/chat/completions";
+let token=localStorage.getItem("vp_token")||"", custom=localStorage.getItem("vp_custom")||"";
+let coins=Number(localStorage.getItem("vp_coins")||0), history=[], imageData=null,lastReply="";
+const $=id=>document.getElementById(id); $("coins").textContent=coins;
+function saveCoins(){localStorage.setItem("vp_coins",coins);$("coins").textContent=coins}
+function toggleSide(){$("side").classList.toggle("open")}
+function settings(){$("token").value=token;$("custom").value=custom;$("modal").style.display="flex"}
+function closeSettings(){$("modal").style.display="none"}
+function saveSettings(){token=$("token").value.trim();custom=$("custom").value.trim();localStorage.setItem("vp_token",token);localStorage.setItem("vp_custom",custom);closeSettings()}
+function newChat(){history=[];imageData=null;$("preview").style.display="none";$("msgs").innerHTML='<div class="empty" id="empty"><h1>محادثة جديدة ✨</h1><p>اكتب أو تحدث أو أرسل صورة.</p></div>'}
+function add(role,text){$("empty")?.remove();let d=document.createElement("div");d.className="msg "+role;d.innerHTML='<div class="who">'+(role==="user"?"أنت":"Vibe Pro")+'</div><div></div>';d.lastChild.textContent=text;$("msgs").appendChild(d);$("msgs").scrollTop=$("msgs").scrollHeight;return d}
+function chooseImage(e){let f=e.target.files[0];if(!f)return;if(coins<10){alert("تحتاج 10 عملات لإرسال الصورة.");return}let r=new FileReader();r.onload=()=>{imageData=r.result;$("preview").innerHTML='<img src="'+imageData+'">';$("preview").style.display="block"};r.readAsDataURL(f)}
+function voice(){const R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R)return alert("متصفحك لا يدعم التعرف على الصوت. جرّب Chrome.");let r=new R();r.lang="ar-SA";r.interimResults=false;r.onresult=e=>$("input").value=e.results[0][0].transcript;r.onerror=e=>alert("تعذر استخدام الميكروفون: "+e.error);r.start()}
+function speak(t){if(!("speechSynthesis"in window))return alert("قراءة الصوت غير مدعومة.");speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(t);u.lang=/[\u0600-\u06ff]/.test(t)?"ar-SA":"en-US";speechSynthesis.speak(u)}
+function readLast(){if(lastReply)speak(lastReply);else alert("لا يوجد رد لقراءته.")}
+function follow(){window.open("https://www.tiktok.com/@artthuroficial_100","_blank");if(localStorage.getItem("vp_follow_claimed"))return;setTimeout(()=>{if(confirm("هل تابعت @artthuroficial_100؟ اضغط موافق بعد المتابعة لإضافة 50 عملة.")){coins+=50;saveCoins();localStorage.setItem("vp_follow_claimed","1")}},800)}
+async function send(){
+let text=$("input").value.trim();
+if(!text&&!imageData)return;
+if(!token){settings();alert("أدخل Hugging Face Token أولًا.");return}
+if(imageData&&coins<10){alert("لا توجد عملات كافية.");return}
+if(imageData){coins-=10;saveCoins()}
+
+let userText=text||"حلل الصورة";
+add("user",userText+(imageData?"\n🖼️ صورة مرفقة":""));
+$("input").value="";
+
+const wantsImage = /(?:صمم|صمّم|أنشئ|انشئ|اعمل|اعملي|اصنع|اصنعلي|ولّد|ولد|توليد|ارسم|ارسملي|صورة|صوره|image|generate|create|draw|design)/i.test(userText)
+                  && !imageData;
+
+if(wantsImage){
+  const box=add("ai","🎨 جاري إنشاء الصورة الحقيقية...");
+  try{
+    const IMAGE_MODEL="stabilityai/stable-diffusion-3-medium-diffusers";
+    const IMAGE_ENDPOINT="https://router.huggingface.co/hf-inference/models/"+IMAGE_MODEL;
+    const prompt=userText.replace(/^(?:من فضلك|لو سمحت|رجاءً)\s*/i,"").trim();
+    const res=await fetch(IMAGE_ENDPOINT,{
+      method:"POST",
+      headers:{
+        "Authorization":"Bearer "+token,
+        "Content-Type":"application/json",
+        "Accept":"image/png"
+      },
+      body:JSON.stringify({
+        inputs:prompt,
+        parameters:{width:768,height:768,num_inference_steps:28}
+      })
+    });
+    if(!res.ok){
+      let msg="";
+      try{const d=await res.json();msg=d?.error||d?.message||""}catch(e){}
+      throw Error(msg||"تعذر إنشاء الصورة (HTTP "+res.status+")");
+    }
+    const blob=await res.blob();
+    const url=URL.createObjectURL(blob);
+    box.lastChild.innerHTML=
+      '<div>✅ تم إنشاء الصورة الحقيقية:</div>'+
+      '<img src="'+url+'" style="display:block;width:100%;max-width:620px;margin:12px 0;border-radius:16px" alt="صورة مولدة">'+
+      '<a href="'+url+'" download="vibe-pro-image.png" style="display:inline-block;padding:10px 14px;border-radius:10px;background:#6d5dfc;color:#fff;text-decoration:none">⬇️ حفظ الصورة</a>';
+    lastReply="تم إنشاء الصورة.";
+    $("msgs").scrollTop=$("msgs").scrollHeight;
+  }catch(err){
+    box.lastChild.textContent="❌ لم أستطع إنشاء الصورة.\n"+(err.message||"خطأ غير معروف")+
+      "\n\nتأكد أن مفتاح Hugging Face لديه صلاحية Inference Providers.";
+  }
+  imageData=null;$("preview").style.display="none";$("file").value="";
+  return;
+}
+
+let box=add("ai","⏳ جاري الاتصال بالذكاء الاصطناعي...");
+try{
+let model=imageData?VISION_MODEL:CHAT_MODEL;
+let content=imageData?[{type:"text",text:userText},{type:"image_url",image_url:{url:imageData}}]:userText;
+let sys="أنت Vibe Pro. إذا سُئلت من صنعك فأجب: الشخص الذي صنعني هو Yacin Naili، من طرف الملك 👑. أجب بلغة المستخدم وكن مفيدًا. "+custom;
+let body={model,messages:[{role:"system",content:sys},...history,{role:"user",content}],temperature:.7,max_tokens:1200};
+let res=await fetch(ENDPOINT,{method:"POST",headers:{"Authorization":"Bearer "+token,"Content-Type":"application/json"},body:JSON.stringify(body)});
+let data=await res.json();if(!res.ok)throw Error(data?.error?.message||"HTTP "+res.status);
+let out=data?.choices?.[0]?.message?.content||"لم يصل رد.";
+box.lastChild.textContent=out;lastReply=out;
+history.push({role:"user",content});history.push({role:"assistant",content:out});
+imageData=null;$("preview").style.display="none";$("file").value="";
+}catch(err){
+let msg=err.message||"خطأ غير معروف";
+box.lastChild.textContent="❌ لم أستطع تنفيذ الطلب.\n"+msg;
+}
+}
+$("input").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send()}});
+</script>
+</div>
+<script id="vibeNewStartScript">
+(function(){
+  const intro=document.getElementById("vibeIntro");
+  const frame=document.getElementById("vibeIntroPlayer");
+  const status=document.getElementById("introStatus");
+  const gate=document.getElementById("vibeProfileGate");
+  const oldApp=document.getElementById("vibeOldApp");
+  const name=document.getElementById("vibeName");
+  const birth=document.getElementById("vibeBirth");
+  const err=document.getElementById("vibeGateError");
+  let videoDone=false;
+
+  oldApp.style.display="none";
+
+  function playerCmd(type){
+    try{frame.contentWindow.postMessage({"x-tiktok-player":true,type:type},"*")}catch(e){}
+  }
+
+  function showGate(){
+    if(videoDone)return;
+    videoDone=true;
+    intro.style.display="none";
+    gate.style.display="flex";
+  }
+
+  window.addEventListener("message",function(e){
+    const d=e.data||{};
+    if(d["x-tiktok-player"]!==true)return;
+    if(d.type==="onPlayerReady"){
+      status.textContent="🔊 الفيديو يعمل";
+      playerCmd("unMute");
+      playerCmd("play");
+    }
+    if(d.type==="onStateChange" && (d.value===0 || d.value==="0")) showGate();
+    if(d.type==="onPlayerError"){
+      status.textContent="⚠️ افتح الفيديو من الزر بالأسفل";
+    }
+  });
+
+  frame.addEventListener("load",function(){
+    setTimeout(function(){playerCmd("unMute");playerCmd("play")},600);
+  });
+
+  // If Acode cannot report TikTok's end state, don't leave the user stuck.
+  setTimeout(function(){
+    if(!videoDone) showGate();
+  },180000);
+
+  document.getElementById("vibeEnter").addEventListener("click",function(){
+    const n=name.value.trim(), b=birth.value;
+    if(n.length<2){err.textContent="⚠️ اكتب اسمك";name.focus();return}
+    if(!b){err.textContent="⚠️ اختر تاريخ ميلادك";birth.focus();return}
+    try{
+      localStorage.setItem("vibe_pro_name",n);
+      localStorage.setItem("vibe_pro_birthdate",b);
+    }catch(e){}
+    gate.style.display="none";
+    oldApp.style.display="";
+    // Keep the original app completely untouched after this point.
+  });
+})();
+</script>
+
+
+<script id="vibeTikTokAudio">
+(function(){
+  const frame = document.querySelector('iframe[src*="tiktok.com/player/v1/"]');
+  if(!frame) return;
+
+  function send(cmd){
+    try {
+      frame.contentWindow.postMessage({type:cmd}, "https://www.tiktok.com");
+    } catch(e) {}
+  }
+
+  // Ask TikTok to play and unmute as soon as its player is ready.
+  window.addEventListener("message", function(e){
+    if(e.origin !== "https://www.tiktok.com") return;
+    const d = e.data || {};
+    if(d.type === "onPlayerReady"){
+      send("unMute");
+      send("play");
+      setTimeout(()=>send("unMute"), 250);
+      setTimeout(()=>send("play"), 350);
+    }
+  });
+
+  // Also try immediately in case the ready message happened before this listener.
+  setTimeout(()=>send("unMute"), 700);
+  setTimeout(()=>send("play"), 800);
+})();
+</script>
+
+<script id="vibePersistProfile">
+(function(){
+  try {
+    const n = localStorage.getItem("vibe_pro_name");
+    const b = localStorage.getItem("vibe_pro_birthdate");
+    const gate = document.getElementById("vibeProfileGate");
+    const name = document.getElementById("vibeName");
+    const birth = document.getElementById("vibeBirth");
+    const enter = document.getElementById("vibeEnter");
+    if(!gate || !name || !birth || !enter) return;
+
+    if(n) name.value = n;
+    if(b) birth.value = b;
+
+    // On returning users, automatically pass the profile gate after the intro video.
+    // This keeps the old app untouched and only changes the onboarding behavior.
+    if(n && b){
+      enter.textContent = "متابعة إلى Vibe Pro 🚀";
+    }
+
+    // Save on every valid entry, and keep a small profile object for future features.
+    const oldClick = enter.onclick;
+    enter.addEventListener("click", function(){
+      const nameValue = name.value.trim();
+      const birthValue = birth.value;
+      if(nameValue.length >= 2 && birthValue){
+        localStorage.setItem("vibe_pro_name", nameValue);
+        localStorage.setItem("vibe_pro_birthdate", birthValue);
+        localStorage.setItem("vibe_pro_profile", JSON.stringify({
+          name:nameValue,
+          birthdate:birthValue,
+          savedAt:new Date().toISOString()
+        }));
+      }
+    });
+
+    // Save input immediately so accidental refresh doesn't lose typed data.
+    name.addEventListener("input", function(){
+      if(name.value.trim()) localStorage.setItem("vibe_pro_name", name.value.trim());
+    });
+    birth.addEventListener("change", function(){
+      if(birth.value) localStorage.setItem("vibe_pro_birthdate", birth.value);
+    });
+  } catch(e) {}
+})();
+</script>
+
+<div id="vibeSettingsToggle" role="button" tabindex="0">⚙️ الإعدادات</div>
+<div id="vibeSettingsPanel">
+  <div id="vibeSettingsCard">
+    <h3>⚙️ إعدادات Vibe Pro</h3>
+    <label for="vibeLanguageSelect">🌐 اللغة</label>
+    <select id="vibeLanguageSelect">
+      <option value="ar">العربية</option>
+      <option value="fr">Français</option>
+      <option value="en">English</option>
+      <option value="es">Español</option>
+      <option value="de">Deutsch</option>
+      <option value="it">Italiano</option>
+      <option value="tr">Türkçe</option>
+    </select>
+    <button id="vibeCloseSettings">رجوع إلى الشات ↩️</button>
+  </div>
+</div>
+
+<script id="vibeSettingsJS">
+(function(){
+  const btn=document.getElementById("vibeSettingsToggle");
+  const panel=document.getElementById("vibeSettingsPanel");
+  const close=document.getElementById("vibeCloseSettings");
+  const sel=document.getElementById("vibeLanguageSelect");
+  if(!btn||!panel||!close||!sel) return;
+  const saved=localStorage.getItem("vibe_pro_language")||"ar";
+  sel.value=saved;
+  document.documentElement.lang=saved;
+  document.documentElement.dir=saved==="ar"?"rtl":"ltr";
+  function open(){panel.style.display="flex";}
+  function shut(){panel.style.display="none";}
+  btn.onclick=open; btn.onkeydown=e=>{if(e.key==="Enter"||e.key===" ")open();};
+  close.onclick=shut;
+  panel.addEventListener("click",e=>{if(e.target===panel)shut();});
+  sel.onchange=()=>{
+    localStorage.setItem("vibe_pro_language",sel.value);
+    document.documentElement.lang=sel.value;
+    document.documentElement.dir=sel.value==="ar"?"rtl":"ltr";
+  };
+})();
+</script>
+
+<script id="vibeMichaelJacksonAudio">
+(function(){
+  const f=document.querySelector('iframe[src*="tiktok.com/player/v1/"]');
+  if(!f) return;
+  function post(type){
+    try{f.contentWindow.postMessage({type:type},"https://www.tiktok.com");}catch(e){}
+  }
+  window.addEventListener("message",function(e){
+    if(e.origin!=="https://www.tiktok.com") return;
+    const d=e.data||{};
+    if(d.type==="onPlayerReady"){
+      post("unMute");
+      post("play");
+      setTimeout(()=>post("unMute"),200);
+      setTimeout(()=>post("play"),400);
+    }
+  });
+  // Browsers may block autoplay-with-sound until a user gesture; keep trying when allowed.
+  setTimeout(()=>{post("unMute");post("play");},600);
+  setTimeout(()=>{post("unMute");post("play");},1400);
+})();
+</script>
+
+<style id="vibeChatComposerFix">
+/* Keep the writing/image composer visible while long replies or generated images appear. */
+html,body{height:100%;overflow:hidden!important}
+#vibeOldApp{height:100%;min-height:100%;overflow:hidden!important}
+#vibeOldApp .chat-container,
+#vibeOldApp .chat,
+#vibeOldApp .messages-container,
+#vibeOldApp .chat-messages{
+  min-height:0!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  padding-bottom:110px!important;
+  -webkit-overflow-scrolling:touch!important;
+}
+#vibeOldApp .input-area,
+#vibeOldApp .composer,
+#vibeOldApp .chat-input-area,
+#vibeOldApp .message-input-container{
+  position:fixed!important;
+  left:12px!important;
+  right:12px!important;
+  bottom:12px!important;
+  z-index:99990!important;
+  width:auto!important;
+  margin:0!important;
+  max-width:none!important;
+}
+#vibeOldApp textarea,
+#vibeOldApp input[type="text"]{
+  min-height:46px!important;
+  max-height:130px!important;
+  resize:none!important;
+  overflow-y:auto!important;
+}
+#vibeOldApp .messages,
+#vibeOldApp .chat-content{
+  padding-bottom:120px!important;
+}
+/* Absolutely no voice controls in the composer. */
+#micBtn,#voiceBtn,#voiceInputBtn,#recordBtn,
+.mic-btn,.voice-btn,.voice-input-btn,.record-btn,
+button[aria-label*="microphone" i],
+button[aria-label*="voice" i],
+button[title*="microphone" i],
+button[title*="voice" i]{display:none!important}
+</style>
+
+<script id="vibeComposerScrollFix">
+(function(){
+  function keepComposerVisible(){
+    const ta=document.querySelector('#vibeOldApp textarea');
+    if(!ta) return;
+    ta.addEventListener('focus', function(){
+      setTimeout(function(){
+        try{ta.scrollIntoView({block:'nearest',behavior:'smooth'});}catch(e){}
+      },250);
+    });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',keepComposerVisible);
+  else keepComposerVisible();
+})();
+</script>
+
+<style id="vibeRemoveReadTalk">
+#vibeOldApp button,
+#vibeOldApp [role="button"]{
+  /* Voice-specific controls are selectively hidden below. */
+}
+#vibeOldApp #speakBtn,#vibeOldApp #readBtn,#vibeOldApp #talkBtn,
+#vibeOldApp #listenBtn,#vibeOldApp #ttsBtn,#vibeOldApp #voiceBtn,
+#vibeOldApp .speak-btn,#vibeOldApp .read-btn,#vibeOldApp .talk-btn,
+#vibeOldApp .listen-btn,#vibeOldApp .tts-btn,#vibeOldApp .voice-btn,
+#vibeOldApp [aria-label*="اقرأ" i],
+#vibeOldApp [aria-label*="تحدث" i],
+#vibeOldApp [aria-label*="استمع" i],
+#vibeOldApp [aria-label*="read aloud" i],
+#vibeOldApp [aria-label*="listen" i],
+#vibeOldApp [aria-label*="speak" i],
+#vibeOldApp [title*="اقرأ" i],
+#vibeOldApp [title*="تحدث" i],
+#vibeOldApp [title*="استمع" i],
+#vibeOldApp [title*="read aloud" i],
+#vibeOldApp [title*="listen" i],
+#vibeOldApp [title*="speak" i]{
+  display:none!important;
+}
+</style>
+
+<style id="vibeArabicInputFix">
+#vibeOldApp input, #vibeOldApp textarea {
+  direction: rtl !important;
+  text-align: right !important;
+  unicode-bidi: plaintext !important;
+  ime-mode: auto !important;
+  -webkit-user-select: text !important;
+  user-select: text !important;
+  pointer-events: auto !important;
+  touch-action: manipulation !important;
+}
+#vibeOldApp textarea, #vibeOldApp input[type="text"]{
+  display:block!important;
+  opacity:1!important;
+  visibility:visible!important;
+  z-index:99999!important;
+}
+</style>
+
+<script id="vibeArabicInputFixJS">
+(function(){
+  function fix(){
+    const fields=document.querySelectorAll('#vibeOldApp input[type="text"], #vibeOldApp textarea');
+    fields.forEach(el=>{
+      el.setAttribute("lang","ar");
+      el.setAttribute("dir","rtl");
+      el.setAttribute("inputmode","text");
+      el.setAttribute("autocomplete","off");
+      el.setAttribute("spellcheck","true");
+      el.removeAttribute("readonly");
+      el.removeAttribute("disabled");
+      el.style.direction="rtl";
+      el.style.textAlign="right";
+    });
+  }
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",fix); else fix();
+  setInterval(fix,1000);
+})();
+</script>
+
+<style id="vibeChatLayoutFix">
+/* ChatGPT-like scrolling: messages scroll, composer stays at the bottom */
+#vibeOldApp .main{
+  height:100dvh!important;
+  min-height:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  overflow:hidden!important;
+}
+#vibeOldApp .msgs{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  -webkit-overflow-scrolling:touch!important;
+  overscroll-behavior:contain!important;
+  padding-bottom:18px!important;
+}
+#vibeOldApp .composer{
+  flex:0 0 auto!important;
+  position:relative!important;
+  bottom:auto!important;
+  left:auto!important;
+  right:auto!important;
+  width:100%!important;
+  z-index:20!important;
+  background:inherit!important;
+}
+#vibeOldApp .preview{
+  flex:0 0 auto!important;
+  max-height:180px!important;
+  overflow:auto!important;
+}
+#vibeOldApp .msgs img{
+  max-width:100%!important;
+  height:auto!important;
+  object-fit:contain!important;
+}
+</style>
+
+<script id="vibeChatLayoutFixJS">
+(function(){
+  function setup(){
+    const app=document.querySelector('#vibeOldApp');
+    const msgs=document.querySelector('#vibeOldApp .msgs');
+    const input=document.querySelector('#vibeOldApp #input');
+    if(!app || !msgs) return;
+
+    // Keep every message; never replace the conversation container.
+    msgs.style.overflowY='auto';
+    msgs.style.webkitOverflowScrolling='touch';
+
+    // Arabic typing + mobile keyboard hints.
+    if(input){
+      input.dir='rtl';
+      input.lang='ar';
+      input.inputMode='text';
+      input.setAttribute('enterkeyhint','send');
+    }
+  }
+
+  function scrollToLatest(){
+    const msgs=document.querySelector('#vibeOldApp .msgs');
+    if(msgs) msgs.scrollTop=msgs.scrollHeight;
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',setup);
+  else setup();
+
+  // Re-apply after the original app renders new replies/images.
+  new MutationObserver(function(){
+    setup();
+  }).observe(document.body,{childList:true,subtree:true});
+
+  window.addEventListener('load',function(){setup(); scrollToLatest();});
+})();
+</script>
+</body></html>
+<style id="vibeNoVoiceComposer">
+#micBtn,#voiceBtn,#voiceInputBtn,#recordBtn,
+.mic-btn,.voice-btn,.voice-input-btn,.record-btn,
+button[aria-label*="microphone" i],button[aria-label*="voice" i],
+button[title*="microphone" i],button[title*="voice" i]{
+display:none!important;
+}
+</style>
+<script id="vibeGreeting">
+(function(){
+  // Keep text/image chat only. Add the requested greeting before the first AI reply.
+  try{
+    if(!localStorage.getItem("vibe_pro_greeting_done")){
+      const oldFetch=window.fetch;
+      if(oldFetch){
+        window.fetch=function(){
+          return oldFetch.apply(this,arguments);
+        };
+      }
+    }
+  }catch(e){}
+})();
+</script>
